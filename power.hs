@@ -1,7 +1,5 @@
-power :: Integer -> Integer -> Integer
-power n 0 = 1
-power n 1 = n
-power n k = n * power n (k-1)
+powers :: Int -> Int -> [Int]
+powers k max = takeWhile (<= max) [k^n | n <- [0..]]
 
 main = do
-    print(power 2 3)
+    print(powers 5 33)
