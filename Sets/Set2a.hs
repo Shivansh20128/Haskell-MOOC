@@ -114,8 +114,13 @@ safeDiv x y = if y==0 then Nothing else Just (div x y)
 --   greet "John" Nothing         ==> "Hello, John!"
 --   greet "John" (Just "Smith")  ==> "Hello, John Smith!"
 
+-- greet :: String -> Maybe String -> String
+-- greet first last = if last==Nothing then "Hello, "++first++"!" else "Hello, "++first++" " ++  init(drop 6 (show last)) ++"!"
 greet :: String -> Maybe String -> String
-greet first last = if last==Nothing then "Hello, "++first++"!" else "Hello, "++first++" " ++  init(drop 6 (show last)) ++"!"
+greet first last =
+  case last of
+    Nothing      -> "Hello, " ++ first ++ "!"
+    Just lastName -> "Hello, " ++ first ++ " " ++ lastName ++ "!"
 
 ------------------------------------------------------------------------------
 -- Ex 9: safe list indexing. Define a function safeIndex so that
