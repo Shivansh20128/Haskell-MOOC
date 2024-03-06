@@ -111,7 +111,10 @@ indexDefault (x:xs) i def = if i ==0 then x else indexDefault xs (i - 1) def
 --   sorted [7,2,7] ==> False
 
 sorted :: [Int] -> Bool
-sorted xs = todo
+sorted [] = True
+sorted [a] = True
+sorted (a:[b]) = b >= a
+sorted (a:b:rest) = if sorted(a:[b]) then sorted(b:rest) else False
 
 ------------------------------------------------------------------------------
 -- Ex 6: compute the partial sums of the given list like this:
@@ -123,7 +126,13 @@ sorted xs = todo
 -- Use pattern matching and recursion (and the list constructors : and [])
 
 sumsOf :: [Int] -> [Int]
-sumsOf xs = todo
+sumsOf [] = []
+sumsOf xs = helperSumsOf 0 xs
+
+helperSumsOf :: Int -> [Int] -> [Int]
+helperSumsOf _ []     = []
+helperSumsOf pre (x:xs) = a : helperSumsOf a xs where a = pre+x
+
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement the function merge that merges two sorted lists of
@@ -136,7 +145,11 @@ sumsOf xs = todo
 --   merge [1,1,6] [1,2]   ==> [1,1,1,2,6]
 
 merge :: [Int] -> [Int] -> [Int]
-merge xs ys = todo
+merge left [] = left
+merge [] right = right
+merge (l:left) (r:right)
+    | r >= l = l : merge left (r:right)
+    | otherwise = r : merge (l:left) right
 
 ------------------------------------------------------------------------------
 -- Ex 8: compute the biggest element, using a comparison function
@@ -160,7 +173,9 @@ merge xs ys = todo
 --     ==> ("Mouse",8)
 
 mymaximum :: (a -> a -> Bool) -> a -> [a] -> a
-mymaximum bigger initial xs = todo
+mymaximum bigger initial [] = initial
+mymaximum bigger initial [x] = if bigger initial x then initial else x
+mymaximum bigger initial (x:xs) = if bigger initial x then mymaximum bigger initial xs else mymaximum bigger x xs
 
 ------------------------------------------------------------------------------
 -- Ex 9: define a version of map that takes a two-argument function
@@ -174,7 +189,9 @@ mymaximum bigger initial xs = todo
 -- Use recursion and pattern matching. Do not use any library functions.
 
 map2 :: (a -> b -> c) -> [a] -> [b] -> [c]
-map2 f as bs = todo
+map2 f [] bs = []
+map2 f as [] = []
+map2 f (a:as) (b:bs) = f a b : map2 f as bs
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the function maybeMap, which works a bit like a
@@ -198,4 +215,16 @@ map2 f as bs = todo
 --   ==> []
 
 maybeMap :: (a -> Maybe b) -> [a] -> [b]
-maybeMap f xs = todo
+maybeMap f [] = []
+maybeMap f xs = helperMaybeMap f xs
+
+helperMaybeMap :: (a -> Maybe b) -> [a] -> [b]
+helperMaybeMap _ [] = []
+helperMaybeMap f (x:xs) = if func (f x) then removeJust (f x) : helperMaybeMap f xs else helperMaybeMap f xs
+
+removeJust :: Maybe b -> b
+removeJust (Just x) = x
+
+func :: Maybe b -> Bool
+func Nothing  = False
+func (Just x) = True
