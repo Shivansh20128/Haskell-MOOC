@@ -204,10 +204,16 @@ joinToLength x list = [str1++str2| str1 <- list, str2 <- list, length (str1++str
 --   [] +|+ [True]        ==> [True]
 --   [] +|+ []            ==> []
 
-(+|+) :: a -> b -> c
-(+|+) list1 [] = head list1
-(+|+) [] list2 = head list2
+-- (+|+) :: (a -> b -> c) -> [a] -> [b] -> [c]
+-- (+|+) (head) [] [] = []
+-- (+|+) (head) list1 [] = [head list1]
+-- (+|+) (head) [] list2 = [head list2]
+-- (+|+) (head) list1 list2 = (head) list1 list2
 
+(+|+) :: [a] -> [a] -> [a]
+(+|+) [] ys = [head ys]
+(+|+) xs [] = [head xs]
+(+|+) xs ys = [head xs] ++ [head ys]
 
 ------------------------------------------------------------------------------
 -- Ex 11: remember the lectureParticipants example from Lecture 2? We
@@ -224,7 +230,7 @@ joinToLength x list = [str1++str2| str1 <- list, str2 <- list, length (str1++str
 --   sumRights [Left "bad!", Left "missing"]         ==>  0
 
 sumRights :: [Either a Int] -> Int
-sumRights = todo
+sumRights = sum . map (either (const 0) id)
 
 ------------------------------------------------------------------------------
 -- Ex 12: recall the binary function composition operation
@@ -240,7 +246,12 @@ sumRights = todo
 --   multiCompose [(3*), (2^), (+1)] 0 ==> 6
 --   multiCompose [(+1), (2^), (3*)] 0 ==> 2
 
-multiCompose fs = todo
+-- multiCompose :: [a] -> b -> b
+-- multiCompose [] str = str
+-- multiCompose fns str = multiCompose (init fns) (fn str) where fn = last fns
+multiCompose :: [a -> a] -> a -> a
+multiCompose [] x = x
+multiCompose (f:fns) x = f (multiCompose fns x)
 
 ------------------------------------------------------------------------------
 -- Ex 13: let's consider another way to compose multiple functions. Given
@@ -261,7 +272,8 @@ multiCompose fs = todo
 --   multiApp id [head, (!!2), last] "axbxc" ==> ['a','b','c'] i.e. "abc"
 --   multiApp sum [head, (!!2), last] [1,9,2,9,3] ==> 6
 
-multiApp = todo
+multiApp :: ([a] -> b) -> [(c -> a)] -> c -> b
+multiApp f gs s = f (map (\x -> x s) gs)
 
 ------------------------------------------------------------------------------
 -- Ex 14: in this exercise you get to implement an interpreter for a
@@ -296,4 +308,15 @@ multiApp = todo
 -- function, the surprise won't work. See section 3.8 in the material.
 
 interpreter :: [String] -> [String]
-interpreter commands = todo
+interpreter commands = coor commands 0 0
+
+coor :: [String] -> Int -> Int -> [String]
+coor [] _ _ = []
+coor (f:funcs) x y =
+  case f of
+    "up"      -> coor funcs x (y + 1)
+    "down"    -> coor funcs x (y - 1)
+    "left"    -> coor funcs (x - 1) y
+    "right"   -> coor funcs (x + 1) y
+    "printX"  -> show x : coor funcs x y
+    "printY"  -> show y : coor funcs x y
