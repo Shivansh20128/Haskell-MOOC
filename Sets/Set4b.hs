@@ -90,8 +90,8 @@ largest :: [Int] -> [Int]
 largest xs = foldr largestHelper [] xs
 
 largestHelper :: Int -> [Int] -> [Int]
-largestHelper y [] = [y]
-largestHelper y ys = if y > head ys then [y] else if y < head ys then ys else y:ys
+largestHelper num [] = [num]
+largestHelper num list = if num < head list then list else if num > head list then [num] else num:list
 
 
 ------------------------------------------------------------------------------
@@ -107,7 +107,8 @@ largestHelper y ys = if y > head ys then [y] else if y < head ys then ys else y:
 myHead :: [a] -> Maybe a
 myHead xs = foldr headHelper Nothing xs
 
-headHelper = todo
+headHelper :: a -> Maybe a -> Maybe a
+headHelper x _ = Just x
 
 ------------------------------------------------------------------------------
 -- Ex 7: get the last element of a list with a fold. Define lasthelper
@@ -122,5 +123,7 @@ headHelper = todo
 myLast :: [a] -> Maybe a
 myLast xs = foldr lastHelper Nothing xs
 
-lastHelper = todo
+lastHelper :: a -> Maybe a -> Maybe a
+lastHelper num Nothing = Just num
+lastHelper _ n = n
 
