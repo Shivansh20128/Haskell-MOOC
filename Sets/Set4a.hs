@@ -23,7 +23,7 @@ import Data.List
 import Data.Ord
 import qualified Data.Map as Map
 import Data.Array
-import Set3b (sorted)
+-- import Set3b (sorted)
 
 ------------------------------------------------------------------------------
 -- Ex 1: implement the function allEqual which returns True if all
@@ -211,7 +211,7 @@ transfer :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
 transfer from to amount bank
       | amount <= 0 = bank
       | Map.notMember from bank || Map.notMember to bank = bank
-      | Map.findWithDefault 0 from bank <= amount = bank
+      | Map.findWithDefault 0 from bank < amount = bank
       | otherwise = credit to (debit from bank) where credit = Map.adjust (\x -> x + amount)
                                                       debit = Map.adjust (\x -> x - amount)
 
