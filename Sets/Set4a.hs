@@ -208,7 +208,12 @@ freqs xs = Map.fromList [(x, (length . filter (==x)) xs) | x <- nub xs]
 --     ==> fromList [("Bob",100),("Mike",50)]
 
 transfer :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
-transfer from to amount bank = todo
+transfer from to amount bank
+      | amount <= 0 = bank
+      | Map.notMember from bank || Map.notMember to bank = bank
+      | Map.findWithDefault 0 from bank <= amount = bank
+      | otherwise = credit to (debit from bank) where credit = Map.adjust (\x -> x + amount)
+                                                      debit = Map.adjust (\x -> x - amount)
 
 ------------------------------------------------------------------------------
 -- Ex 11: given an Array and two indices, swap the elements in the indices.
