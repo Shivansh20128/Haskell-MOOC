@@ -469,7 +469,17 @@ data Blur = Blur
   deriving Show
 
 instance Transform Blur where
-  apply = todo
+  apply _ (Picture pic) = Picture (\(Coord x y) ->  avg (map (pic . coord) $ neighbours x y))
+    where coord p = Coord (fst p) (snd p)
+          neighbours x y = [(x,y),(x,y-1),(x,y+1),(x-1,y),(x+1,y)]
+          avg colorList = func (foldr netColor (Color 0 0 0) colorList) (length colorList)
+
+func :: Color -> Int -> Color
+func (Color r g b) i = Color (r `div` i) (g `div` i) (b `div` i)
+
+netColor :: Color -> Color -> Color
+netColor (Color a b c) (Color d e f) = Color (a+d) (b+e) (c+f)
+
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -487,7 +497,8 @@ data BlurMany = BlurMany Int
   deriving Show
 
 instance Transform BlurMany where
-  apply = todo
+   apply (BlurMany 0) point = point
+   apply (BlurMany b) points = apply (BlurMany (b-1)) (apply Blur points)
 ------------------------------------------------------------------------------
 
 -- Here's a blurred version of our original snowman. See it by running
